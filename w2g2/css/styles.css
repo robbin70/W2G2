@@ -69,5 +69,5 @@ table td.filename a.namelock .fileactions {
 }
 
 table td.filename a.namelock a.action {
-    line-height: normal;
+    line-height: normal !important;
 }
