@@ -1,9 +1,8 @@
-
 a.action.locked{ display:none !important; }
 
 a.action-getstate_w2g.locked{ display:inline !important; }
 
-a.statelock a.action[data-action!=getstate_dir&&data-action!=getstate_file]{
+a.statelock a.action:not([data-action='getstate_dir']), a.statelock a.action:not([data-action='getstate_file']) {
     pointer-events:none;
 }
 a.namelock
@@ -27,13 +26,48 @@ table td.filename a.namelock {
     position: relative;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    display: block;
     height: 50px;
     line-height: 50px;
-    padding: 0;
+    padding: 0 !important;
+
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    width: 100%;
 }
 .has-favorites #fileList td.filename a.namelock {
     left: 50px;
     margin-right: 50px;
 }
 
+table td.filename a.namelock .thumbnail-wrapper {
+    flex: 0 0 10%;
+    width: 100%;
+}
+
+table td.filename a.namelock .nametext {
+    flex: 0 0 50%;
+    width: 100%;
+    padding-right: 0 !important;
+    position: relative !important;
+    float: none !important;
+}
+
+table td.filename a.namelock .fileactions {
+    flex: 0 0 40%;
+    width: 100%;
+    margin-left: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 100%;
+
+    z-index: 0;
+    position: relative !important;
+}
+
+table td.filename a.namelock a.action {
+    line-height: normal;
+}
