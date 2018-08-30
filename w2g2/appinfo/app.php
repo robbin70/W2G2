@@ -11,7 +11,7 @@ class App {
 
     public static function launch()
     {
-        if (\OC_User::getUser() == false) {
+        if ( ! \OC::$server->getUserSession()->getUser()) {
             return;
         }
 
@@ -21,7 +21,7 @@ class App {
     }
 }
 
-if (\OCP\App::isEnabled(App::name)) {
+if (\OC::$server->getAppManager()->isEnabledForUser(App::name)) {
     App::launch();
 
     $notificationManager = \OC::$server->getNotificationManager();
