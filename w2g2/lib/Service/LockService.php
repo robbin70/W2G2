@@ -27,46 +27,68 @@ class LockService {
         $this->uiMessage = new UIMessage();
     }
 
-    public function handle($fileId, $fileType)
+    public function lock($fileId, $fileType)
     {
         // Admin option to regarding directory locking is set to none.
         if (ConfigMapper::getDirectoryLock() === 'directory_locking_none' && $fileType === 'dir') {
-            return $this->uiMessage->getDirectoryLockingNone();
+            return [
+                'success' => false,
+                'message' => $this->uiMessage->getDirectoryLockingNone()
+            ];
         }
 
         $file = new File($fileId, $this->mapper);
 
         if ($file->isLocked()) {
-            return $this->unlock($file);
+            return [
+                'success' => true,
+                'message' => $this->uiMessage->getAlreadyLocked()
+            ];
         }
 
-        return $this->lock($file);
-    }
-
-    public function lock($file)
-    {
         if ($file->isGroupFolder()) {
-            return $this->uiMessage->getGroupFolderLockingNone();
+            return [
+                'success' => false,
+                'message' => $this->uiMessage->getGroupFolderLockingNone()
+            ];
         }
 
         $this->create($file->getId());
-        
+
         $file->onLocked();
 
-        return $this->uiMessage->getLocked($this->currentUser);
+        return [
+            'success' => true,
+            'message' => $this->uiMessage->getLocked($this->currentUser)
+        ];
     }
 
-    public function unlock($file)
+    public function unlock($id)
     {
+        $file = new File($id, $this->mapper);
+
+        if ( ! $file->isLocked()) {
+            return [
+                'success' => true,
+                'message' => $this->uiMessage->getAlreadyUnlocked()
+            ];
+        }
+
         if ($file->canBeUnlockedBy($this->currentUser)) {
-            $this->delete($file->getId());
+            $this->delete($id);
 
             $file->onUnlocked();
 
-            return $this->uiMessage->getUnlocked();
+            return [
+                'success' => true,
+                'message' => $this->uiMessage->getUnlocked()
+            ];
         }
 
-        return $this->uiMessage->getNoPermission();
+        return [
+            'success' => false,
+            'message' => $this->uiMessage->getNoPermission()
+        ];
     }
 
     public function all() {
@@ -83,7 +105,7 @@ class LockService {
 
     public function create($fileId) {
         $lock = new Lock();
-        
+
         $lock->setFileId($fileId);
         $lock->setLockedBy($this->currentUser);
 

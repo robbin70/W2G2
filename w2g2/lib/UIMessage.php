@@ -13,7 +13,7 @@ class UIMessage
     public function __construct()
     {
         $this->userNameRule = ConfigMapper::getLockingByNameRule();
-        
+
         $this->l = \OCP\Util::getL10N('w2g2');
     }
 
@@ -22,6 +22,16 @@ class UIMessage
         $locker = $this->userNameRule === "rule_username" ? $locker : UserService::getDisplayName($locker);
 
         return " " . $this->l->t("Locked by") . " " . $locker;
+    }
+
+    public function getAlreadyLocked()
+    {
+        return "File is already locked";
+    }
+
+    public function getAlreadyUnlocked()
+    {
+        return "File is already unlocked";
     }
 
     public function getNoPermission()

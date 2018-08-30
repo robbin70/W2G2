@@ -2,6 +2,7 @@
 
 namespace OCA\w2g2\Controller;
 
+use OCA\w2g2\UIMessage;
 use OCP\IRequest;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\JSONResponse;
@@ -27,6 +28,7 @@ class LockController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      *
      * @param $files
      * @param $folder
@@ -61,22 +63,42 @@ class LockController extends Controller {
      */
     public function store($id, $fileType)
     {
-        return new DataResponse($this->service->handle($id, $fileType));
+        $data = $this->service->lock($id, $fileType);
+
+        if ($data['success']) {
+            return new JSONResponse([
+                'message' => $data['message']
+            ], 201);
+        }
+
+        return new JSONResponse([
+            'message' => $data['message']
+        ], 403);
     }
 
     /**
      * @NoAdminRequired
      *
      * @param $action
-     * @param null $lockedFileId
+     * @param null $id
      * @return JSONResponse
      */
-    public function delete($action, $lockedFileId = null)
+    public function delete($action, $id = null)
     {
         if ($action === "all") {
             return new JSONResponse($this->service->deleteAll());
         }
-        
-        return new JSONResponse($this->service->delete($lockedFileId));
+
+        $data = $this->service->unlock($id);
+
+        if ($data['success']) {
+            return new JSONResponse([
+                'message' => $data['message']
+            ], 201);
+        }
+
+        return new JSONResponse([
+            'message' => $data['message']
+        ], 403);
     }
 }
