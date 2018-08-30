@@ -66,7 +66,7 @@ class ConfigController extends Controller {
         $l = \OCP\Util::getL10N($this->appName);
         $configValue = \OC::$server->getConfig()->getAppValue('w2g2', $type, '[unset]');
 
-        if ($configValue == '[unset]') {
+        if ($configValue === '[unset]') {
             ConfigMapper::store($type, $value);
 
             return new DataResponse($l->t($type) . " " . $l->t("has been set!"));
