@@ -34,6 +34,9 @@
         }
 
         buildCSS();
+
+        window.fileHelper = new FileHelper();
+        window.fileUI = new UI();
     });
 
     function filesLockStateCheck() {
@@ -65,37 +68,6 @@
         });
     }
 
-    // Switch the Lockstate
-    function toggleState(fileName) {
-        var fileNameEncoded = escapeHTML(fileName);
-
-        $(".ignore-click").unbind("click");
-
-        //Walk through the files list
-        $('#fileList tr').each(function () {
-            var $tr = $(this);
-            var $_tr = $tr.html().replace(/^\s+|\s+$/g, '').replace('<span class="extension">', '').split('</span>').join('');
-            var actionname = 'getstate_w2g';
-
-            if ($_tr.indexOf(fileNameEncoded) != -1) {
-                if ($_tr.indexOf(lockstate) == -1) {
-                    unlock($tr, actionname);
-                }
-                else if ($_tr.indexOf(lockstate) != -1) {
-                    lock($tr, actionname);
-                }
-            }
-        });
-
-        $(".ignore-click").click(function (event) {
-            event.preventDefault();
-
-            return false;
-        });
-
-        removeLinksFromLockedDirectories();
-    }
-
     /**
      * Toggle the 'lock' state for the given file.
      *
@@ -115,8 +87,18 @@
         fileBeingActedUponId = id;
 
         // Show 'loading' message on the UI
-        showLoading(fileName);
+        fileUI.showLoading(id);
 
+        if (fileHelper.isLocked($file)) {
+            unlockFile(id, fileType);
+
+            return;
+        }
+
+        lockFile(id, fileType);
+    }
+
+    function lockFile(id, fileType) {
         var data = {
             id: id,
             fileType: fileType,
@@ -127,9 +109,55 @@
             type: "post",
             data: data,
             success: function (data) {
-                onToggleLockSuccess(fileName, data);
+                onLockSuccess(id, data['message']);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                onLockError(id, jqXHR.responseJSON.message);
             },
         });
+    }
+
+    function unlockFile(id, fileType) {
+        var data = {
+            id: id,
+            fileType: fileType,
+        };
+
+        $.ajax({
+            url: url,
+            type: "delete",
+            data: data,
+            success: function (data) {
+                onUnlockSuccess(id, data['message']);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                onUnlockError(id, jqXHR.responseJSON.message);
+            },
+        });
+    }
+
+    function onLockSuccess(id, message) {
+        fileUI.locked(id, message);
+
+        fileBeingActedUponId = '';
+    }
+
+    function onLockError(id, message) {
+        fileUI.lockedError(id, message);
+
+        fileBeingActedUponId = '';
+    }
+
+    function onUnlockSuccess(id, message) {
+        fileUI.unlocked(id, message);
+
+        fileBeingActedUponId = '';
+    }
+
+    function onUnlockError(id, message) {
+        fileUI.unlockedError(id, message);
+
+        fileBeingActedUponId = '';
     }
 
     /**
@@ -161,134 +189,17 @@
 
     function updateAllFilesUI(files) {
         for (var i = 0; i < files.length; i++) {
-            var fileName = files[i][1];
+            var id = files[i][0];
             var message = files[i][3];
-            var fileType = files[i][5];
 
             // if (fileType === 'dir' && directoryLock === 'directory_locking_none') {
             //     return;
             // }
 
-            updateFileUI(fileName, message);
+            if (message) {
+                onLockSuccess(id, message);
+            }
         }
-    }
-
-    /**
-     * Display the 'lock' status on the page.
-     *
-     * @param fileName
-     * @param message
-     */
-    function updateFileUI(fileName, message) {
-        fileName = fileName.replace(/%20/g, ' ');
-
-        var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'lock.png') + '"></img>' + '<span>' + escapeHTML(message) + '</span>';
-
-        $('tr').filterAttr('data-file', fileName)
-            .find('td.filename')
-            .find('a.name')
-            .find('span.fileactions')
-            .find("a.action")
-            .filterAttr('data-action', 'getstate_w2g')
-            .html(html);
-
-        $('tr').filterAttr('data-file', fileName)
-            .find('td.filename')
-            .find('a.namelock')
-            .find('span.fileactions')
-            .find("a.action")
-            .filterAttr('data-action', 'getstate_w2g')
-            .html(html);
-
-        // if ( ! message.includes(t('w2g2', 'No permission'))) {
-            toggleState(fileName);
-        // }
-    }
-
-    /**
-     * Unlock the file on the page.
-     *
-     * @param $tr
-     * @param actionname
-     */
-    function unlock($tr, actionname) {
-        $tr.find('a.action[data-action!=' + actionname + ']').removeClass('locked');
-        $tr.find('a.action[data-action!=' + actionname + ']').addClass('permanent');
-        $tr.find('a.action[data-action=' + actionname + ']').removeClass('w2g_active');
-        $tr.find('a.namelock').addClass('name').removeClass('namelock').removeClass('ignore-click');
-
-        var $fileSize = $tr.find('td.filesize');
-        var $date = $tr.find('td.date');
-
-        $fileSize.removeClass('statelock');
-        $date.removeClass('statelock');
-
-        $fileSize.unbind('click');
-        $date.unbind('click');
-
-        $tr.find('td').removeClass('statelock');
-        $tr.find('a.statelock').addClass('name');
-    }
-
-    /**
-     * Lock the file on the page.
-     *
-     * @param $tr
-     * @param actionname
-     */
-    function lock($tr, actionname) {
-        $tr.find('a.permanent[data-action!=' + actionname + ']').removeClass('permanent');
-
-        $tr.find('a.action[data-action=' + actionname + ']').addClass('w2g_active');
-
-        // $tr.find('a.action[data-action!=' + actionname + ']:not([class*=action-menu])').addClass('locked');
-        $tr.find('a.action[data-action!=' + actionname + ']:not([class*=favorite])').addClass('locked');
-
-        $tr.find('a.name').addClass('namelock').removeClass('name').addClass('ignore-click');
-
-        var $fileSize = $tr.find('td.filesize');
-        var $date = $tr.find('td.date');
-
-        $fileSize.addClass('statelock');
-        $date.addClass('statelock');
-
-        $fileSize.click(function() {
-            return false;
-        });
-
-        $date.click(function() {
-            return false;
-        });
-
-        $tr.find('td').addClass('statelock');
-    }
-
-    function onToggleLockSuccess(fileName, data) {
-        updateFileUI(fileName, data);
-
-        fileBeingActedUponId = '';
-    }
-
-    function showLoading(fileName) {
-        fileName = fileName.replace(/%20/g, ' ');
-
-        var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'loading.png') + '"></img>' + '<span> In progress </span>';
-
-        $('tr').filterAttr('data-file', fileName)
-            .find('td.filename')
-            .find('a.name')
-            .find('span.fileactions')
-            .find("a.action")
-            .filterAttr('data-action', 'getstate_w2g')
-            .html(html);
-
-        $('tr').filterAttr('data-file', fileName)
-            .find('td.filename')
-            .find('a.namelock')
-            .find('span.fileactions')
-            .find("a.action")
-            .filterAttr('data-action', 'getstate_w2g')
-            .html(html);
     }
 
     function removeLinksFromLockedDirectories() {
@@ -342,11 +253,115 @@
     function buildCSS() {
         var cssrules = $("<style type='text/css'> </style>").appendTo("head");
 
-        cssrules.append(".statelock{ background-color:#" + color + ";color:#" + fontcolor + " !important;}" +
+        cssrules.append(".statelock { background-color: #" + color + " !important; color:#" + fontcolor + " !important;}" +
             ".statelock span.modified{color:#" + fontcolor + " !important;}" +
             "a.w2g_active{color:#" + fontcolor + " !important;display:inline !important;opacity:1.0 !important;}" +
             "a.w2g_active:hover{color:#fff !important;}" +
             "a.namelock,a.namelock span.extension {color:#" + fontcolor + ";opacity:1.0!important;padding: 0 !important;}");
+    }
+
+    function FileHelper() {
+        this.getById = function (id) {
+            return $('tr[data-id=' + id + ']');
+        };
+
+        this.isLocked = function ($file) {
+            return parseInt($file.data().locked) === 1;
+        };
+    }
+
+    function UI() {
+        this.locked = function (id, message) {
+            var $file = fileHelper.getById(id);
+
+            this.setMessage($file, message);
+
+            $file.data('locked', 1);
+
+            var actionName = 'getstate_w2g';
+
+            $(".ignore-click").unbind("click");
+
+            $file.find('a.permanent[data-action!=' + actionName + ']').removeClass('permanent');
+            $file.find('a.action[data-action=' + actionName + ']').addClass('w2g_active');
+            $file.find('a.action[data-action!=' + actionName + ']:not([class*=favorite])').addClass('locked');
+            $file.find('a.name').addClass('namelock').removeClass('name').addClass('ignore-click');
+
+            var $fileSize = $file.find('td.filesize');
+            var $date = $file.find('td.date');
+
+            $fileSize.click(function() {
+                return false;
+            });
+
+            $date.click(function() {
+                return false;
+            });
+
+            $file.find('td').addClass('statelock');
+
+            $(".ignore-click").click(function (event) {
+                event.preventDefault();
+
+                return false;
+            });
+
+            removeLinksFromLockedDirectories();
+        };
+
+        this.unlocked = function (id, message) {
+            var $file = fileHelper.getById(id);
+
+            this.setMessage($file, message);
+
+            var $file = fileHelper.getById(id);
+
+            $file.data('locked', 0);
+
+            var actionName = 'getstate_w2g';
+
+            $file.find('a.action[data-action!=' + actionName + ']').removeClass('locked');
+            $file.find('a.action[data-action!=' + actionName + ']').addClass('permanent');
+            $file.find('a.action[data-action=' + actionName + ']').removeClass('w2g_active');
+            $file.find('a.namelock').addClass('name').removeClass('namelock').removeClass('ignore-click');
+
+            var $fileSize = $file.find('td.filesize');
+            var $date = $file.find('td.date');
+
+            $fileSize.unbind('click');
+            $date.unbind('click');
+
+            $file.find('td').removeClass('statelock');
+            $file.find('a.statelock').addClass('name');
+
+            removeLinksFromLockedDirectories();
+        };
+
+        this.lockedError = function (id, message) {
+            var $file = fileHelper.getById(id);
+
+            this.setMessage($file, message);
+        };
+
+        this.unlockedError = function (id, message) {
+            var $file = fileHelper.getById(id);
+
+            this.setMessage($file, message);
+        };
+
+        this.setMessage = function ($file, message) {
+            var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'lock.png') + '"></img>' + '<span>' + escapeHTML(message) + '</span>';
+
+            $file.find('.fileactions .action-getstate_w2g').html(html);
+        };
+
+        this.showLoading = function (id) {
+            var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'loading.png') + '"></img>' + '<span> In progress </span>';
+
+            var $file = fileHelper.getById(id);
+
+            $file.find('.fileactions .action-getstate_w2g').html(html);
+        }
     }
 
 })($, window, document);
