@@ -71,3 +71,14 @@ table td.filename a.namelock .fileactions {
 table td.filename a.namelock a.action {
     line-height: normal !important;
 }
+
+table td.filename .fileactions a.w2g_active {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+table td.filename .fileactions a.w2g_active img {
+    margin-right: 5px;
+}
