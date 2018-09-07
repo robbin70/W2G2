@@ -5,6 +5,10 @@ namespace OCA\w2g2\Db;
 class FileMapper {
     public static function get($fileId)
     {
+        if ( ! $fileId) {
+            return null;
+        }
+
         $db = \OC::$server->getDatabaseConnection();
 
         $query = "SELECT * FROM *PREFIX*" . "filecache" . " WHERE fileid = ?";

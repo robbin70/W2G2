@@ -147,7 +147,7 @@ class LockService {
         $fileParentData = $fileParent->getCompleteData();
 
         // Root directory or a group folder root, so no parent.
-        if ($fileParentData['path'] === 'files' || $fileParentData['path'] === '__groupfolders') {
+        if ( ! $fileParentData || $fileParentData['path'] === 'files' || $fileParentData['path'] === '__groupfolders') {
             return '';
         }
 
@@ -169,7 +169,11 @@ class LockService {
         $currentDirectory = $fileParent;
         $currentDirectoryData = $currentDirectory->getCompleteData();
 
-        while ($currentDirectoryData['path'] !== 'files' && $currentDirectoryData['path'] !== '__groupfolders') {
+        while (
+            $currentDirectoryData &&
+            $currentDirectoryData['path'] !== 'files' &&
+            $currentDirectoryData['path'] !== '__groupfolders'
+        ) {
             $upperDirectoryId = $currentDirectory->getParentId();
             $upperDirectory = new File($upperDirectoryId, $this->mapper);
 
@@ -185,8 +189,7 @@ class LockService {
     }
 
     private function handleException ($e) {
-        if ($e instanceof DoesNotExistException ||
-            $e instanceof MultipleObjectsReturnedException) {
+        if ($e instanceof DoesNotExistException || $e instanceof MultipleObjectsReturnedException) {
             throw new NotFoundException($e->getMessage());
         } else {
             throw $e;
