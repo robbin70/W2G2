@@ -54,14 +54,9 @@ class PostMigration implements IRepairStep {
      */
     protected function isOldVersion()
     {
-        $query = "SELECT column_name
-                  FROM information_schema.columns
-                  WHERE table_name = '" . $this->tempTableName . "'";
+        $appVersion = \OCP\App::getAppVersion('w2g2');
 
-        $result = $this->db->executeQuery($query)
-            ->fetchAll();
-
-        return is_array($result) && count($result) > 0;
+        return version_compare($appVersion, '1.0.0') < 1;
     }
 
     /**
