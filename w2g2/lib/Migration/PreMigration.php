@@ -55,14 +55,9 @@ class PreMigration implements IRepairStep {
      */
     protected function isOldVersion()
     {
-        $query = "SELECT column_name
-                  FROM information_schema.columns
-                  WHERE table_name = '" . $this->tableName . "' and column_name = 'name'";
+        $appVersion = \OCP\App::getAppVersion('w2g2');
 
-        $result = $this->db->executeQuery($query)
-            ->fetchAll();
-
-        return is_array($result) && count($result) > 0;
+        return version_compare($appVersion, '1.0.0') < 1;
     }
 
     /**
@@ -71,7 +66,9 @@ class PreMigration implements IRepairStep {
      */
     protected function createTempTable()
     {
-        $createStatement = "CREATE TABLE " . $this->tempTableName . " (name varchar(255) PRIMARY KEY, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, locked_by varchar(255))";
+        $createStatement = "CREATE TABLE " .
+            $this->tempTableName .
+            " (name varchar(255) PRIMARY KEY, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, locked_by varchar(255))";
 
         $this->db->executeQuery($createStatement);
     }
