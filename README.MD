@@ -3,6 +3,16 @@ Nextcloud plugin that allows the users to lock files and folders.
 
 It works with files and folders owned by the user, shared by another user or inside a group folder. 
 
+## How it works
+
+This app works only for the web version of Nextcloud. 
+
+When a user 'locks' a file the app will add a pseudo-lock to the file actions (read, modify, share, etc.).
+
+The pseudo-lock works by removing the click listeners and hiding the buttons in JavaScript.
+
+The file can only be 'unlocked' by the original user that locked the file or an admin (via the settings panel where all files locks are listed).
+
 
 ## Original Author
 
