@@ -306,7 +306,11 @@
                 return false;
             });
 
-            removeLinksFromLockedDirectories();
+            $file.find('a.name').on('click', function (event) {
+                event.preventDefault();
+
+                return false;
+            });
         };
 
         this.unlocked = function (id, message) {
@@ -317,6 +321,8 @@
             var $file = fileHelper.getById(id);
 
             $file.data('locked', 0);
+
+            $(".ignore-click").unbind("click");
 
             var actionName = 'getstate_w2g';
 
@@ -333,8 +339,6 @@
 
             $file.find('td').removeClass('statelock');
             $file.find('a.statelock').addClass('name');
-
-            removeLinksFromLockedDirectories();
         };
 
         this.lockedError = function (id, message) {
