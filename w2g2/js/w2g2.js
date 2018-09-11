@@ -339,6 +339,12 @@
 
             $file.find('td').removeClass('statelock');
             $file.find('a.statelock').addClass('name');
+
+            $(".ignore-click").click(function (event) {
+                event.preventDefault();
+
+                return false;
+            });
         };
 
         this.lockedError = function (id, message) {
