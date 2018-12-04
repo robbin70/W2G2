@@ -59,7 +59,7 @@ class LockController extends Controller {
      *
      * @param $id
      * @param $fileType
-     * @return DataResponse
+     * @return JSONResponse
      */
     public function store($id, $fileType)
     {

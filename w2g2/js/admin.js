@@ -57,10 +57,10 @@ $(document).ready(function(){
         if ( ! lockFile) {
             return;
         }
-        
+
         var data =  {
             action: 'one',
-            lockedFileId: lockFile
+            id: lockFile
         };
 
         $.ajax({
