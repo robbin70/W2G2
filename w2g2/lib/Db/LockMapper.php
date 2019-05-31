@@ -13,7 +13,7 @@ class LockMapper extends Mapper {
 
     public function all()
     {
-        $query = "SELECT f.path, f.fileid, l.locked_by FROM " . $this->tableName . " AS l JOIN *PREFIX*" . 'filecache' . " as f ON l.file_id = f.fileid";
+        $query = "SELECT f.path, f.fileid, l.locked_by, l.created FROM " . $this->tableName . " AS l JOIN *PREFIX*" . 'filecache' . " as f ON l.file_id = f.fileid";
 
         return $this->db->executeQuery($query)
             ->fetchAll();
@@ -35,9 +35,13 @@ class LockMapper extends Mapper {
 
     public function store(Lock $lock)
     {
-        $sql = 'INSERT INTO ' . $this->tableName . ' (file_id, locked_by) VALUES (?, ?)';
+        $sql = 'INSERT INTO ' . $this->tableName . ' (file_id, locked_by, created) VALUES (?, ?, ?)';
 
-        $this->db->executeQuery($sql, [$lock->getFileId(), $lock->getLockedBy()]);
+        $this->db->executeQuery($sql, [
+            $lock->getFileId(),
+            $lock->getLockedBy(),
+            date('Y-m-s H:i:s')
+        ]);
     }
 
     public function deleteOne(Lock $lock)

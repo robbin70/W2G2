@@ -70,7 +70,13 @@ class File {
 
     public function getParentId()
     {
-        return ($this->getCompleteData())['parent'];
+        $data = $this->getCompleteData();
+
+        if ( ! $data) {
+            return null;
+        }
+
+        return $data['parent'];
     }
 
     public function getCompleteData()

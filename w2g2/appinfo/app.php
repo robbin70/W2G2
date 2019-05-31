@@ -2,39 +2,7 @@
 
 namespace OCA\w2g2;
 
-use OCA\w2g2\Notification\Notifier;
+use \OCA\w2g2\AppInfo\Application;
 
-
-class App {
-    const name = 'w2g2';
-    const table = 'locks_w2g2';
-
-    public static function launch()
-    {
-        if ( ! \OC::$server->getUserSession()->getUser()) {
-            return;
-        }
-
-        \OCP\Util::addScript(self::name, 'w2g2');
-
-        \OCP\Util::addStyle(self::name, 'styles');
-    }
-}
-
-if (\OC::$server->getAppManager()->isEnabledForUser(App::name)) {
-    App::launch();
-
-    $notificationManager = \OC::$server->getNotificationManager();
-    $notificationManager->registerNotifier(
-        function() {
-            $Application = new \OCP\AppFramework\App('w2g2');
-
-            return $Application->getContainer()->query(Notifier::class);
-        },
-        function () {
-            $l = \OC::$server->getL10N('w2g2');
-
-            return ['id' => 'w2g2', 'name' => $l->t('w2g2')];
-        }
-    );
-}
+$app = new Application();
+$app->boot();

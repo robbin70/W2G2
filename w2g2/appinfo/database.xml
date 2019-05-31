@@ -31,7 +31,6 @@
             <field>
                 <name>created</name>
                 <type>timestamp</type>
-                <default>CURRENT_TIMESTAMP</default>
             </field>
         </declaration>
     </table>

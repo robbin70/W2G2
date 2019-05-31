@@ -64,42 +64,42 @@ script($_['appName'], 'jscolor');
         <br>
 
         <?php
-            if (count($_['lockedFiles']) > 0) {
-        ?>
+        if (count($_['lockedFiles']) > 0) {
+            ?>
 
-        <div id="lockfield">
-            <label for="select_lock"> <?php p($l->t("Locked files")) ?>: </label>
+            <div id="lockfield">
+                <label for="select_lock"> <?php p($l->t("Locked files")) ?>: </label>
 
-            <br>
+                <br>
 
-            <select size="6"
-                    style="height:100px; min-width: 400px;"
-                    id="select_lock">'
+                <select size="6"
+                        style="height:100px; min-width: 400px;"
+                        id="select_lock">'
 
-                <?php for ($i = 0; $i < count($_['lockedFiles']); $i++) { ?>
-                    <option value="<?php p($_['lockedFiles'][$i]['fileid']) ?>">
-                        <?php p(rtrim($_['lockedFiles'][$i]['path'], '/')) ?>
-                    </option>
-                <?php } ?>
-            </select>
+                    <?php for ($i = 0; $i < count($_['lockedFiles']); $i++) { ?>
+                        <option value="<?php p($_['lockedFiles'][$i]['fileid']) ?>">
+                            <?php p(rtrim($_['lockedFiles'][$i]['path'], '/')) ?>
+                        </option>
+                    <?php } ?>
+                </select>
 
-            <br>
+                <br>
 
-            <input id="clearthis"
-                   type="submit"
-                   value="<?php p($l->t("Unlock this file")) ?>"
-                   name=clearthis">
+                <input id="clearthis"
+                       type="submit"
+                       value="<?php p($l->t("Unlock this file")) ?>"
+                       name=clearthis">
 
-            <input id="clearall"
-                   type="submit"
-                   value="<?php p($l->t("Unlock all files")) ?>"
-                   name=clearall">
-        </div>
+                <input id="clearall"
+                       type="submit"
+                       value="<?php p($l->t("Unlock all files")) ?>"
+                       name=clearall">
+            </div>
 
-        <?php
-            } else {
-                p($l->t("There are no locked files at the moment"));
-            }
+            <?php
+        } else {
+            p($l->t("There are no locked files at the moment"));
+        }
         ?>
 
         <br>
@@ -121,11 +121,11 @@ script($_['appName'], 'jscolor');
                     <input id="rule_username"
                            type="radio"
                            name="suffix"
-                           <?php
-                                if ($_['lockingByUsername']) {
-                                    p('checked');
-                                }
-                            ?>
+                        <?php
+                        if ($_['lockingByUsername']) {
+                            p('checked');
+                        }
+                        ?>
                     >
 
                     <label for="rule_username">
@@ -141,13 +141,13 @@ script($_['appName'], 'jscolor');
 
                 <p>
                     <input id="rule_displayname"
-                           type="radio" 
+                           type="radio"
                            name="suffix"
-                           <?php
-                                if ($_['lockingByDisplayName']) {
-                                    p('checked');
-                                }
-                           ?>
+                        <?php
+                        if ($_['lockingByDisplayName']) {
+                            p('checked');
+                        }
+                        ?>
                     >
 
                     <label for="rule_displayname">
@@ -179,9 +179,9 @@ script($_['appName'], 'jscolor');
                     <input id="directory_locking_all"
                            type="radio"
                            name="directory_locking"
-                           <?php if ($_['directoryLockingAll']) {
-                               p('checked');
-                           } ?>
+                        <?php if ($_['directoryLockingAll']) {
+                            p('checked');
+                        } ?>
                     >
 
                     <label for="directory_locking_all">
@@ -193,9 +193,9 @@ script($_['appName'], 'jscolor');
                     <input id="directory_locking_files"
                            type="radio"
                            name="directory_locking"
-                           <?php if ($_['directoryLockingFiles']) {
-                               p('checked');
-                           } ?>
+                        <?php if ($_['directoryLockingFiles']) {
+                            p('checked');
+                        } ?>
                     >
 
                     <label for="directory_locking_files">
@@ -207,9 +207,9 @@ script($_['appName'], 'jscolor');
                     <input id="directory_locking_none"
                            type="radio"
                            name="directory_locking"
-                           <?php if ($_['directoryLockingNone']) {
-                               p('checked');
-                           } ?>
+                        <?php if ($_['directoryLockingNone']) {
+                            p('checked');
+                        } ?>
                     >
 
                     <label for="directory_locking_none">

@@ -40,7 +40,14 @@ class AdminMapper {
                 }
             } else if ($fileIndex === 0) {
                 $filePath = substr($lockedFiles[$i]['path'], strlen('files/'));
-                $lockedFiles[$i]['path'] = $lockedFiles[$i]['locked_by'] . '/' . $filePath;
+
+                $path = $lockedFiles[$i]['locked_by'] . '/' . $filePath;
+
+                if ($lockedFiles[$i]['created']) {
+                    $path .= ' --- Created: ' . $lockedFiles[$i]['created'];
+                }
+
+                $lockedFiles[$i]['path'] = $path;
             }
         }
 

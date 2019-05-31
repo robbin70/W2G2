@@ -8,7 +8,6 @@
     var checkStateUrl = OC.generateUrl('/apps/w2g2/lock');
     var directoryLockUrl = OC.generateUrl('/apps/w2g2/directory-lock');
     var colorUrl = OC.generateUrl('/apps/w2g2/color');
-    var lockstate = t('w2g2', 'Locked');
 
     $(document).ready(function () {
         getBackgroundColor();
