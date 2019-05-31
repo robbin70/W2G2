@@ -40,7 +40,7 @@ class LockMapper extends Mapper {
         $this->db->executeQuery($sql, [
             $lock->getFileId(),
             $lock->getLockedBy(),
-            date('Y-m-s H:i:s')
+            date('Y-m-d H:i:s')
         ]);
     }
 

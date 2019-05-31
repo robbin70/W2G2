@@ -68,7 +68,7 @@ class PreMigration implements IRepairStep {
     {
         $createStatement = "CREATE TABLE " .
             $this->tempTableName .
-            " (name varchar(255) PRIMARY KEY, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, locked_by varchar(255))";
+            " (name varchar(255) PRIMARY KEY, created TIMESTAMP DEFAULT null, locked_by varchar(255))";
 
         $this->db->executeQuery($createStatement);
     }
