@@ -36,18 +36,24 @@ class AdminMapper {
                 if ($result && count($result) > 0) {
                     $path = $result[0]['mount_point'];
 
-                    $lockedFiles[$i]['path'] = $path . '/' . $file;
+                    $details = $path . '/' . $file;
+
+                    if (array_key_exists('created', $lockedFiles[$i]) && $lockedFiles[$i]['created']) {
+                        $details .= ' --- Created: ' . $lockedFiles[$i]['created'];
+                    }
+
+                    $lockedFiles[$i]['path'] = $details;
                 }
             } else if ($fileIndex === 0) {
                 $filePath = substr($lockedFiles[$i]['path'], strlen('files/'));
 
-                $path = $lockedFiles[$i]['locked_by'] . '/' . $filePath;
+                $details = $lockedFiles[$i]['locked_by'] . '/' . $filePath;
 
-                if ($lockedFiles[$i]['created']) {
-                    $path .= ' --- Created: ' . $lockedFiles[$i]['created'];
+                if (array_key_exists('created', $lockedFiles[$i]) && $lockedFiles[$i]['created']) {
+                    $details .= ' --- Created: ' . $lockedFiles[$i]['created'];
                 }
 
-                $lockedFiles[$i]['path'] = $path;
+                $lockedFiles[$i]['path'] = $details;
             }
         }
 

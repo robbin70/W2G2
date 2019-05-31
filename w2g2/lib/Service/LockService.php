@@ -63,7 +63,7 @@ class LockService {
         ];
     }
 
-    public function unlock($id)
+    public function unlock($id, $action = null)
     {
         $file = new File($id, $this->mapper);
 
@@ -74,7 +74,7 @@ class LockService {
             ];
         }
 
-        if ($file->canBeUnlockedBy($this->currentUser)) {
+        if ($file->canBeUnlockedBy($this->currentUser) || $action === 'admin_one') {
             $this->delete($id);
 
             $file->onUnlocked();

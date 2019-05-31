@@ -37,7 +37,7 @@ $(document).ready(function(){
 
     $('#clearall').click(function(){
         var data = {
-            action: 'all'
+            action: 'admin_all'
         };
 
         $.ajax({
@@ -59,7 +59,7 @@ $(document).ready(function(){
         }
 
         var data =  {
-            action: 'one',
+            action: 'admin_one',
             id: lockFile
         };
 

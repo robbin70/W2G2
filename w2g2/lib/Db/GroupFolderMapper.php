@@ -12,7 +12,7 @@ class GroupFolderMapper
         $query = "SELECT * FROM *PREFIX*" . "filecache" . " WHERE name = ? AND path = ?";
 
         $results = $db->executeQuery($query, [$groupFolderName, $groupFolderName])
-                ->fetchAll();
+            ->fetchAll();
 
         if (count($results) > 0) {
             return $results[0]['fileid'];
@@ -23,8 +23,8 @@ class GroupFolderMapper
 
     public static function getMountPoints($folderId)
     {
-        if ( ! is_int($folderId)) {
-            return false;
+        if ( ! is_numeric($folderId)) {
+            return [];
         }
 
         $db = \OC::$server->getDatabaseConnection();

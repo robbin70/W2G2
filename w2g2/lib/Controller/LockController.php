@@ -83,13 +83,13 @@ class LockController extends Controller {
      * @param null $id
      * @return JSONResponse
      */
-    public function delete($action, $id = null)
+    public function delete($action = null, $id = null)
     {
-        if ($action === "all") {
+        if ($action === "admin_all") {
             return new JSONResponse($this->service->deleteAll());
         }
 
-        $data = $this->service->unlock($id);
+        $data = $this->service->unlock($id, $action);
 
         if ($data['success']) {
             return new JSONResponse([
