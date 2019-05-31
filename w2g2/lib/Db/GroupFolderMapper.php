@@ -2,7 +2,8 @@
 
 namespace OCA\w2g2\Db;
 
-class GroupFolderMapper {
+class GroupFolderMapper
+{
     public static function get()
     {
         $groupFolderName = "__groupfolders";
@@ -22,6 +23,10 @@ class GroupFolderMapper {
 
     public static function getMountPoints($folderId)
     {
+        if ( ! is_int($folderId)) {
+            return false;
+        }
+
         $db = \OC::$server->getDatabaseConnection();
 
         $query = "SELECT mount_point FROM *PREFIX*" . 'group_folders' . " WHERE folder_id=?";
