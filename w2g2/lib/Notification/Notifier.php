@@ -48,9 +48,8 @@ class Notifier implements INotifier {
      * @param INotification $notification
      * @param string $languageCode The code of the language that should be used to prepare the notification
      * @return INotification
-     * @throws \InvalidArgumentException When the notification was not prepared by a notifier
      */
-    public function prepare(INotification $notification, $languageCode) {
+    public function prepare(INotification $notification, string $languageCode): INotification {
         if ($notification->getApp() !== 'w2g2') {
             throw new \InvalidArgumentException();
         }
@@ -106,5 +105,15 @@ class Notifier implements INotifier {
         );
 
         return $notification;
+    }
+
+    public function getID(): string
+    {
+        return 'w2g2';
+    }
+
+    public function getName(): string
+    {
+        return $this->lFactory->get('w2g2')->t('w2g2');
     }
 }

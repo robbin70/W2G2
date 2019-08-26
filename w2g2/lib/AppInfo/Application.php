@@ -27,18 +27,8 @@ class Application extends App
     public function registerHooks()
     {
         $notificationManager = \OC::$server->getNotificationManager();
-        $notificationManager->registerNotifier(
-            function() {
-                $Application = new \OCP\AppFramework\App('w2g2');
 
-                return $Application->getContainer()->query(Notifier::class);
-            },
-            function () {
-                $l = \OC::$server->getL10N('w2g2');
-
-                return ['id' => 'w2g2', 'name' => $l->t('w2g2')];
-            }
-        );
+        $notificationManager->registerNotifierService(Notifier::class);
     }
 
     public function registerScripts()

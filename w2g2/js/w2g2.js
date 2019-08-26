@@ -173,7 +173,7 @@
 
         var data = {
             files: JSON.stringify(files),
-            folder: escapeHTML(oc_dir)
+            folder: escapeHTMLString(oc_dir)
         };
 
         $.ajax({
@@ -359,7 +359,7 @@
         };
 
         this.setMessage = function ($file, message) {
-            var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'lock.png') + '"></img>' + '<span>' + escapeHTML(message) + '</span>';
+            var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'lock.png') + '"></img>' + '<span>' + escapeHTMLString(message) + '</span>';
 
             $file.find('.fileactions .action-getstate_w2g').html(html);
         };
@@ -373,4 +373,14 @@
         }
     }
 
+    function escapeHTMLString(s) {
+        return s.toString()
+            .split('&')
+            .join('&amp;')
+            .split('<')
+            .join('&lt;').split('>')
+            .join('&gt;').split('"')
+            .join('&quot;').split('\'')
+            .join('&#039;');
+    }
 })($, window, document);
