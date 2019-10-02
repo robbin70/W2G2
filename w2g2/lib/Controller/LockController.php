@@ -2,6 +2,7 @@
 
 namespace OCA\w2g2\Controller;
 
+use Countable;
 use OCA\w2g2\UIMessage;
 use OCP\IRequest;
 use OCP\AppFramework\Http\DataResponse;
@@ -37,6 +38,10 @@ class LockController extends Controller {
     public function index($files)
     {
         $files = json_decode($files, true);
+
+        if ( ! is_array($files) && ! $files instanceof Countable) {
+            $files = [];
+        }
 
         for ($i = 0; $i < count($files); $i++) {
             $fileData = [];
