@@ -14,7 +14,7 @@
 	</description>
 	<licence>AGPL</licence>
 	<author>Ionut Orzu</author>
-	<version>3.0.0</version>
+	<version>3.0.1</version>
 	<category>social</category>
 	<category>files</category>
 
@@ -24,7 +24,7 @@
 	<screenshot>https://raw.githubusercontent.com/newroco/W2G2/master/screenshots/screenshot_01.PNG</screenshot>
 
 	<dependencies>
-		<nextcloud min-version="17.0" max-version="17.1"/>
+		<nextcloud min-version="17.0" max-version="18.0"/>
 	</dependencies>
 
 	<activity>

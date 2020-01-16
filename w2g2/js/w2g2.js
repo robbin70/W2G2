@@ -1,5 +1,4 @@
 (function ($, window, document) {
-
     var color = '008887';
     var fontcolor = 'ffffff';
     var fileBeingActedUponId = '';
@@ -14,7 +13,7 @@
         getFontColor();
         getDirectoryLockStatus();
 
-        if (typeof FileActions !== 'undefined' && $('#dir').length > 0) {
+        if ($('#dir').length > 0) {
             OCA.Files.fileActions.registerAction({
                 name: 'getstate_w2g',
                 displayName: '',
