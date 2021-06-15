@@ -2,7 +2,10 @@
 
 namespace OCA\w2g2\AppInfo;
 
+use OCA\w2g2\Activity\ActivityListener;
+use OCA\w2g2\Activity\EventHandler;
 use OCA\w2g2\File;
+use OCA\w2g2\Notification\NotificationListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -17,14 +20,12 @@ use OCA\w2g2\Controller\LockController;
 use OCA\w2g2\Service\AdminService;
 use OCA\w2g2\Service\ConfigService;
 use OCA\w2g2\Service\LockService;
-use OCA\w2g2\Service\UserService;
 use OCA\w2g2\Db\AdminMapper;
 use OCA\w2g2\Db\CategoryMapper;
 use OCA\w2g2\Db\ConfigMapper;
 use OCA\w2g2\Db\FavoriteMapper;
 use OCA\w2g2\Db\FileMapper;
 use OCA\w2g2\Db\GroupFolderMapper;
-use OCA\w2g2\Db\Lock;
 use OCA\w2g2\Db\LockMapper;
 
 class Application extends App implements IBootstrap
@@ -40,6 +41,7 @@ class Application extends App implements IBootstrap
         $this->registerMappers($container);
         $this->registerServices($container);
         $this->registerControllers($container);
+        $this->registerVarious($container);
     }
 
     public function boot(IBootContext $context): void
@@ -174,6 +176,33 @@ class Application extends App implements IBootstrap
                 $c->get('LockMapper'),
                 $c->get('GroupFolderMapper'),
                 $c->get('FileMapper')
+            );
+        });
+    }
+
+    protected function registerVarious($container)
+    {
+        $container->registerService('ActivityListener', function(ContainerInterface $c){
+            return new ActivityListener(
+                $c->get('IManager'),
+                $c->get('IUserSession'),
+                $c->get('IAppManager'),
+                $c->get('IUserMountCache')
+            );
+        });
+
+        $container->registerService('NotificationListener', function(ContainerInterface $c){
+            return new NotificationListener(
+                $c->get('IManager'),
+                $c->get('IUserManager'),
+                $c->get('FavoriteMapper')
+            );
+        });
+
+        $container->registerService('EventHandler', function(ContainerInterface $c){
+            return new EventHandler(
+                $c->get('ActivityListener'),
+                $c->get('NotificationListener')
             );
         });
     }

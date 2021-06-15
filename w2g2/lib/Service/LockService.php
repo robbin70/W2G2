@@ -34,7 +34,7 @@ class LockService
 
         $this->currentUser = UserService::get();
 
-        $this->uiMessage = new UIMessage();
+        $this->uiMessage = new UIMessage($this->configMapper);
     }
 
     public function lock($fileId, $fileType)

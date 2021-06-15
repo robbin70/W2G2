@@ -7,7 +7,7 @@ use OCP\Notification\IManager;
 use OCA\w2g2\Activity\FileLockEvent;
 use OCA\w2g2\Db\FavoriteMapper;
 
-class Listener {
+class NotificationListener {
     /** @var IManager */
     protected $notificationManager;
 
@@ -22,7 +22,7 @@ class Listener {
      * @param IManager $notificationManager
      * @param IUserManager $userManager
      */
-    public function __construct(IManager $notificationManager, IUserManager $userManager, FavoriteMapper  $favoriteMapper)
+    public function __construct(IManager $notificationManager, IUserManager $userManager, FavoriteMapper $favoriteMapper)
     {
         $this->notificationManager = $notificationManager;
         $this->userManager = $userManager;

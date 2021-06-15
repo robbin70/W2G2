@@ -2,8 +2,8 @@
 
 namespace OCA\w2g2\Activity;
 
-use OCA\w2g2\Activity\Listener as ActivityListener;
-use OCA\w2g2\Notification\Listener as NotificationListener;
+use OCA\w2g2\Activity\ActivityListener;
+use OCA\w2g2\Notification\NotificationListener;
 
 class EventHandler {
     private $activityListener;

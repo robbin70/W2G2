@@ -12,7 +12,7 @@ use OCP\Files\Config\ICachedMountFileInfo;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 
-class Listener {
+class ActivityListener {
     /** @var IManager */
     protected $activityManager;
 
