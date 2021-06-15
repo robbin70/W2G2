@@ -5,65 +5,68 @@ namespace OCA\w2g2\Db;
 use OCP\IDbConnection;
 use OCP\AppFramework\Db\Mapper;
 
-class ConfigMapper {
-    public static function getColor()
+class ConfigMapper extends Mapper
+{
+    public function __construct(IDbConnection $db)
+    {
+        parent::__construct($db, 'locks_w2g2', '\OCA\w2g2\Db\Lock');
+    }
+
+    public function getColor()
     {
         $defaultColor = "008887";
-        $color = static::get('color');
+        $color = $this->get('color');
 
         return $color ?: $defaultColor;
     }
 
-    public static function getFontColor()
+    public function getFontColor()
     {
         $defaultFontColor = "FFFFFF";
-        $fontColor = static::get('fontcolor');
+        $fontColor = $this->get('fontcolor');
 
         return $fontColor ?: $defaultFontColor;
     }
 
-    public static function getDirectoryLock()
+    public function getDirectoryLock()
     {
         $default = "directory_locking_all";
-        $value = static::get('directory_locking');
+        $value = $this->get('directory_locking');
 
         return $value ?: $default;
     }
 
-    public static function getLockingByNameRule()
+    public function getLockingByNameRule()
     {
         $default = "rule_username";
-        $value = static::get('suffix');
+        $value = $this->get('suffix');
 
         return $value ?: $default;
     }
 
-    protected static function get($configKey)
+    protected function get($configKey)
     {
-        $db = \OC::$server->getDatabaseConnection();
         $appName = 'w2g2';
 
         $query = "SELECT * FROM *PREFIX*appconfig where configkey=? and appid=? LIMIT 1";
 
-        $result = $db->executeQuery($query, [$configKey, $appName]);
+        $result = $this->db->executeQuery($query, [$configKey, $appName]);
         $row = $result->fetch();
 
         return $row ? $row['configvalue'] : '';
     }
 
-    public static function store($type, $value)
+    public function store($type, $value)
     {
-        $db = \OC::$server->getDatabaseConnection();
         $query = "INSERT INTO *PREFIX*appconfig(appid,configkey,configvalue) VALUES('w2g2',?,?)";
 
-        $db->executeQuery($query, [$type, $value]);
+        $this->db->executeQuery($query, [$type, $value]);
     }
 
-    public static function update($type, $value)
+    public function update($type, $value)
     {
-        $db = \OC::$server->getDatabaseConnection();
         $query = "UPDATE *PREFIX*appconfig set configvalue=? WHERE appid='w2g2' and configkey=?";
 
-        $db->executeQuery($query, [$value, $type]);
+        $this->db->executeQuery($query, [$value, $type]);
     }
 }

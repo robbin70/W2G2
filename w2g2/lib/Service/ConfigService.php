@@ -2,32 +2,48 @@
 
 namespace OCA\w2g2\Service;
 
-use Exception;
-
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\w2g2\Db\ConfigMapper;
 
-class ConfigService {
+class ConfigService
+{
+    protected $configMapper;
+
+    public function __construct(ConfigMapper $configMapper)
+    {
+        $this->configMapper = $configMapper;
+    }
+
     public function getColor()
     {
-        return ConfigMapper::getColor();
+        return $this->configMapper->getColor();
     }
 
     public function getFontColor()
     {
-        return ConfigMapper::getFontColor();
+        return $this->configMapper->getFontColor();
     }
 
     public function getDirectoryLock()
     {
-        return ConfigMapper::getDirectoryLock();
+        return $this->configMapper->getDirectoryLock();
     }
 
     public function getLockingByNameRule()
     {
-        return ConfigMapper::getLockingByNameRule();
+        return $this->configMapper->getLockingByNameRule();
+    }
+
+    public function store($type, $value)
+    {
+        $this->configMapper->store($type, $value);
+    }
+
+    public function update($type, $value)
+    {
+        $this->configMapper->update($type, $value);
     }
 
     private function handleException($e)

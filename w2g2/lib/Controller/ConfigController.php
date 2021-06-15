@@ -2,7 +2,6 @@
 
 namespace OCA\w2g2\Controller;
 
-use OCA\w2g2\Db\ConfigMapper;
 use OCP\IRequest;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
@@ -10,7 +9,8 @@ use OCP\AppFramework\Controller;
 use OCA\w2g2\Migration\UpdateDatabase;
 use OCA\w2g2\Service\ConfigService;
 
-class ConfigController extends Controller {
+class ConfigController extends Controller
+{
     protected $appName;
     protected $service;
 
@@ -67,12 +67,12 @@ class ConfigController extends Controller {
         $configValue = \OC::$server->getConfig()->getAppValue('w2g2', $type, '[unset]');
 
         if ($configValue === '[unset]') {
-            ConfigMapper::store($type, $value);
+            $this->service->store($type, $value);
 
             return new DataResponse($l->t($type) . " " . $l->t("has been set!"));
         }
 
-        ConfigMapper::update($type, $value);
+        $this->service->update($type, $value);
 
         return new DataResponse($l->t("Updated successfully!"));
     }

@@ -4,7 +4,8 @@ namespace OCA\w2g2\Service;
 
 use OCP\IUser;
 
-class UserService {
+class UserService
+{
     public static function get()
     {
         return \OC::$server->getUserSession()->getUser()->getUID();

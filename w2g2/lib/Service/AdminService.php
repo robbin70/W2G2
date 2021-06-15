@@ -2,14 +2,13 @@
 
 namespace OCA\w2g2\Service;
 
-use Exception;
-
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\w2g2\Db\AdminMapper;
 
-class AdminService {
+class AdminService
+{
     private $mapper;
 
     public function __construct(AdminMapper $mapper)

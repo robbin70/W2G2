@@ -3,7 +3,6 @@
 namespace OCA\w2g2\Controller;
 
 use Countable;
-use OCA\w2g2\UIMessage;
 use OCP\IRequest;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\JSONResponse;
@@ -16,15 +15,12 @@ use OCA\w2g2\Service\LockService;
 class LockController extends Controller {
     /** @var LockService */
     private $service;
-    /** @var string */
-    private $userId;
 
-    public function __construct($AppName, IRequest $request, LockService $lockService, $UserId)
+    public function __construct($AppName, IRequest $request, LockService $lockService)
     {
         parent::__construct($AppName, $request);
 
         $this->service = $lockService;
-        $this->userId = $UserId;
     }
 
     /**

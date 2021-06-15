@@ -2,22 +2,33 @@
 
 namespace OCA\w2g2;
 
+use OCA\w2g2\Db\LockMapper;
 use OCA\w2g2\Service\UserService;
 use OCA\w2g2\Db\GroupFolderMapper;
 use OCA\w2g2\Db\FileMapper;
 
-class File {
+class File
+{
     protected $fileId;
-
     // @var OCA\w2g2\Db\Lock
     protected $lock;
+    protected $groupFolderMapper;
+    protected $fileMapper;
+    protected $lockMapper;
 
-    public function __construct($fileId, $mapper)
+    public function __construct(LockMapper $lockMapper, GroupFolderMapper $groupFolderMapper, FileMapper $fileMapper)
+    {
+        $this->lockMapper = $lockMapper;
+        $this->groupFolderMapper = $groupFolderMapper;
+        $this->fileMapper = $fileMapper;
+    }
+
+    public function boot($fileId)
     {
         $this->fileId = $fileId;
 
         try {
-            $this->lock = $mapper->find($this->fileId);
+            $this->lock = $this->lockMapper->find($this->fileId);
         } catch (\Exception $e) {
             $this->lock = null;
         }
@@ -59,7 +70,7 @@ class File {
 
     public function isGroupFolder()
     {
-        $groupFolderFileId = GroupFolderMapper::get();
+        $groupFolderFileId = $this->groupFolderMapper->get();
 
         if ( ! $groupFolderFileId) {
             return false;
@@ -81,6 +92,6 @@ class File {
 
     public function getCompleteData()
     {
-        return FileMapper::get($this->fileId);
+        return $this->fileMapper->get($this->fileId);
     }
 }

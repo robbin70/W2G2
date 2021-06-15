@@ -2,18 +2,25 @@
 
 namespace OCA\w2g2\Db;
 
-class FileMapper {
-    public static function get($fileId)
+use OCP\IDbConnection;
+use OCP\AppFramework\Db\Mapper;
+
+class FileMapper extends Mapper
+{
+    public function __construct(IDbConnection $db)
+    {
+        parent::__construct($db, 'locks_w2g2', '\OCA\w2g2\Db\Lock');
+    }
+
+    public function get($fileId)
     {
         if ( ! $fileId) {
             return null;
         }
 
-        $db = \OC::$server->getDatabaseConnection();
-
         $query = "SELECT * FROM *PREFIX*" . "filecache" . " WHERE fileid = ?";
 
-        $file = $db->executeQuery($query, [$fileId])
+        $file = $this->db->executeQuery($query, [$fileId])
             ->fetch();
 
         if ($file && count($file) > 0) {

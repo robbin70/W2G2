@@ -6,7 +6,8 @@ use JsonSerializable;
 
 use OCP\AppFramework\Db\Entity;
 
-class Lock extends Entity implements JsonSerializable {
+class Lock extends Entity implements JsonSerializable
+{
     protected $fileId;
     protected $lockedBy;
     protected $created;

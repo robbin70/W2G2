@@ -2,16 +2,23 @@
 
 namespace OCA\w2g2\Db;
 
-class GroupFolderMapper
+use OCP\IDbConnection;
+use OCP\AppFramework\Db\Mapper;
+
+class GroupFolderMapper extends Mapper
 {
-    public static function get()
+    public function __construct(IDbConnection $db)
+    {
+        parent::__construct($db, 'locks_w2g2', '\OCA\w2g2\Db\Lock');
+    }
+
+    public function get()
     {
         $groupFolderName = "__groupfolders";
-        $db = \OC::$server->getDatabaseConnection();
 
         $query = "SELECT * FROM *PREFIX*" . "filecache" . " WHERE name = ? AND path = ?";
 
-        $results = $db->executeQuery($query, [$groupFolderName, $groupFolderName])
+        $results = $this->db->executeQuery($query, [$groupFolderName, $groupFolderName])
             ->fetchAll();
 
         if (count($results) > 0) {
@@ -21,17 +28,15 @@ class GroupFolderMapper
         return null;
     }
 
-    public static function getMountPoints($folderId)
+    public function getMountPoints($folderId)
     {
         if ( ! is_numeric($folderId)) {
             return [];
         }
 
-        $db = \OC::$server->getDatabaseConnection();
-
         $query = "SELECT mount_point FROM *PREFIX*" . 'group_folders' . " WHERE folder_id=?";
 
-        return $db->executeQuery($query, [$folderId])
+        return $this->db->executeQuery($query, [$folderId])
             ->fetchAll();
     }
 }

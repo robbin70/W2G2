@@ -2,14 +2,22 @@
 
 namespace OCA\w2g2\Db;
 
-class FavoriteMapper {
-    public static function getUsersForFile($fileId)
+class FavoriteMapper
+{
+    protected $categoryMapper;
+
+    public function __construct(CategoryMapper $categoryMapper)
+    {
+        $this->categoryMapper = $categoryMapper;
+    }
+
+    public function getUsersForFile($fileId)
     {
         $usersIds = [];
-        $categoriesResult = CategoryMapper::getCategoriesForFile($fileId);
+        $categoriesResult = $this->categoryMapper->getCategoriesForFile($fileId);
 
         foreach ($categoriesResult as $category) {
-            $result = CategoryMapper::getFavoriteByCategoryId($category["categoryid"]);
+            $result = $this->categoryMapper->getFavoriteByCategoryId($category["categoryid"]);
 
             if (count($result) > 0) {
                 $usersIds[] = $result[0]["uid"];

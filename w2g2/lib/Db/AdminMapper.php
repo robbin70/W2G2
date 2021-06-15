@@ -2,14 +2,15 @@
 
 namespace OCA\w2g2\Db;
 
-class AdminMapper {
-    protected $tableName;
+class AdminMapper
+{
     protected $lockMapper;
+    protected $groupFolderMapper;
 
-    public function __construct(LockMapper $lockMapper)
+    public function __construct(LockMapper $lockMapper, GroupFolderMapper $groupFolderMapper)
     {
-        $this->tableName = 'locks_w2g2';
         $this->lockMapper = $lockMapper;
+        $this->groupFolderMapper = $groupFolderMapper;
     }
 
     public function getLocks()
@@ -31,7 +32,7 @@ class AdminMapper {
                 $groupFolderId = substr($path, 0, $slashIndex);
                 $file = substr($path, $slashIndex + 1);
 
-                $result = GroupFolderMapper::getMountPoints($groupFolderId);
+                $result = $this->groupFolderMapper->getMountPoints($groupFolderId);
 
                 if ($result && count($result) > 0) {
                     $path = $result[0]['mount_point'];

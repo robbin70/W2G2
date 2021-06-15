@@ -14,23 +14,26 @@ class Listener {
     /** @var IUserManager */
     protected $userManager;
 
+    protected $favoriteMapper;
+
     /**
      * Listener constructor.
      *
      * @param IManager $notificationManager
      * @param IUserManager $userManager
      */
-    public function __construct(IManager $notificationManager, IUserManager $userManager)
+    public function __construct(IManager $notificationManager, IUserManager $userManager, FavoriteMapper  $favoriteMapper)
     {
         $this->notificationManager = $notificationManager;
         $this->userManager = $userManager;
+        $this->favoriteMapper = $favoriteMapper;
     }
 
     public function handle(FileLockEvent $event)
     {
         $fileId = $event->getFileId();
 
-        $usersIds = FavoriteMapper::getUsersForFile($fileId);
+        $usersIds = $this->favoriteMapper->getUsersForFile($fileId);
 
         // No user favorited the locked file, don't send any notifications.
         if (count($usersIds) <= 0) {

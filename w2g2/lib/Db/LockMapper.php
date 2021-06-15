@@ -5,7 +5,8 @@ namespace OCA\w2g2\Db;
 use OCP\IDbConnection;
 use OCP\AppFramework\Db\Mapper;
 
-class LockMapper extends Mapper {
+class LockMapper extends Mapper
+{
     public function __construct(IDbConnection $db)
     {
         parent::__construct($db, 'locks_w2g2', '\OCA\w2g2\Db\Lock');

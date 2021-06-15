@@ -13,14 +13,24 @@ use OCA\w2g2\Db\ConfigMapper;
 use OCA\w2g2\UIMessage;
 use OCA\w2g2\File;
 
-class LockService {
-    protected $mapper;
+class LockService
+{
+    protected $lockMapper;
+    protected $configMapper;
+    protected $file;
     protected $uiMessage;
     protected $currentUser;
 
-    public function __construct(LockMapper $mapper)
+    public function __construct(
+        LockMapper $lockMapper,
+        ConfigMapper $configMapper,
+        File $file
+    )
     {
-        $this->mapper = $mapper;
+        $this->lockMapper = $lockMapper;
+        $this->configMapper = $configMapper;
+
+        $this->file = $file;
 
         $this->currentUser = UserService::get();
 
@@ -30,32 +40,32 @@ class LockService {
     public function lock($fileId, $fileType)
     {
         // Admin option to regarding directory locking is set to none.
-        if (ConfigMapper::getDirectoryLock() === 'directory_locking_none' && $fileType === 'dir') {
+        if ($this->configMapper->getDirectoryLock() === 'directory_locking_none' && $fileType === 'dir') {
             return [
                 'success' => false,
                 'message' => $this->uiMessage->getDirectoryLockingNone()
             ];
         }
 
-        $file = new File($fileId, $this->mapper);
+        $this->file->boot($fileId);
 
-        if ($file->isLocked()) {
+        if ($this->file->isLocked()) {
             return [
                 'success' => true,
                 'message' => $this->uiMessage->getAlreadyLocked()
             ];
         }
 
-        if ($file->isGroupFolder()) {
+        if ($this->file->isGroupFolder()) {
             return [
                 'success' => false,
                 'message' => $this->uiMessage->getGroupFolderLockingNone()
             ];
         }
 
-        $this->create($file->getId());
+        $this->create($this->file->getId());
 
-        $file->onLocked();
+        $this->file->onLocked();
 
         return [
             'success' => true,
@@ -65,19 +75,19 @@ class LockService {
 
     public function unlock($id, $action = null)
     {
-        $file = new File($id, $this->mapper);
+        $this->file->boot($id);
 
-        if ( ! $file->isLocked()) {
+        if ( ! $this->file->isLocked()) {
             return [
                 'success' => true,
                 'message' => $this->uiMessage->getAlreadyUnlocked()
             ];
         }
 
-        if ($file->canBeUnlockedBy($this->currentUser) || $action === 'admin_one') {
+        if ($this->file->canBeUnlockedBy($this->currentUser) || $action === 'admin_one') {
             $this->delete($id);
 
-            $file->onUnlocked();
+            $this->file->onUnlocked();
 
             return [
                 'success' => true,
@@ -92,12 +102,12 @@ class LockService {
     }
 
     public function all() {
-        return $this->mapper->findAll();
+        return $this->lockMapper->findAll();
     }
 
     public function find($fileId) {
         try {
-            return $this->mapper->find($fileId);
+            return $this->lockMapper->find($fileId);
         } catch(Exception $e) {
             $this->handleException($e);
         }
@@ -109,14 +119,14 @@ class LockService {
         $lock->setFileId($fileId);
         $lock->setLockedBy($this->currentUser);
 
-        return $this->mapper->store($lock);
+        $this->lockMapper->store($lock);
     }
 
     public function delete($fileId) {
         try {
-            $lock = $this->mapper->find($fileId);
+            $lock = $this->lockMapper->find($fileId);
 
-            $this->mapper->deleteOne($lock);
+            $this->lockMapper->deleteOne($lock);
         } catch(Exception $e) {
             $this->handleException($e);
         }
@@ -124,27 +134,28 @@ class LockService {
 
     public function deleteAll()
     {
-        return $this->mapper->deleteAll();
+        $this->lockMapper->deleteAll();
     }
 
     public function check($fileId, $fileType)
     {
-        $file = new File($fileId, $this->mapper);
+        $this->file->boot($fileId);
 
-        if ($file->isLocked()) {
-            return $this->uiMessage->getLocked($file->getLocker());
+        if ($this->file->isLocked()) {
+            return $this->uiMessage->getLocked($this->file->getLocker());
         }
 
-        $directoryLock = ConfigMapper::getDirectoryLock();
+        $directoryLock = $this->configMapper->getDirectoryLock();
 
         // Admin config to not check the upper directories.
         if ($directoryLock === 'directory_locking_none') {
             return '';
         }
 
-        $fileParentId = $file->getParentId();
-        $fileParent = new File($fileParentId, $this->mapper);
-        $fileParentData = $fileParent->getCompleteData();
+        $fileParentId = $this->file->getParentId();
+
+        $this->file->boot($fileParentId);
+        $fileParentData = $this->file->getCompleteData();
 
         // Root directory or a group folder root, so no parent.
         if ( ! $fileParentData || $fileParentData['path'] === 'files' || $fileParentData['path'] === '__groupfolders') {
@@ -153,8 +164,8 @@ class LockService {
 
         // Check the parent directory above, depending on the admin config.
         if ($directoryLock === 'directory_locking_files') {
-            if ($fileType === 'file' && $fileParent->isLocked()) {
-                return $this->uiMessage->getLocked($fileParent->getLocker());
+            if ($fileType === 'file' && $this->file->isLocked()) {
+                return $this->uiMessage->getLocked($this->file->getLocker());
             }
 
             return '';
@@ -162,27 +173,26 @@ class LockService {
 
         // Check all parent directories above, depending on the admin config.
         // $this->directoryLock === 'directory_locking_all'
-        if ($fileParent->isLocked()) {
-            return $this->uiMessage->getLocked($fileParent->getLocker());
+        if ($this->file->isLocked()) {
+            return $this->uiMessage->getLocked($this->file->getLocker());
         }
 
-        $currentDirectory = $fileParent;
-        $currentDirectoryData = $currentDirectory->getCompleteData();
+        $currentDirectoryData = $this->file->getCompleteData();
 
         while (
             $currentDirectoryData &&
             $currentDirectoryData['path'] !== 'files' &&
             $currentDirectoryData['path'] !== '__groupfolders'
         ) {
-            $upperDirectoryId = $currentDirectory->getParentId();
-            $upperDirectory = new File($upperDirectoryId, $this->mapper);
+            $upperDirectoryId = $this->file->getParentId();
 
-            if ($upperDirectory->isLocked()) {
-                return $this->uiMessage->getLocked($upperDirectory->getLocker());
+            $this->file->boot($upperDirectoryId);
+
+            if ($this->file->isLocked()) {
+                return $this->uiMessage->getLocked($this->file->getLocker());
             }
 
-            $currentDirectory = $upperDirectory;
-            $currentDirectoryData = $upperDirectory->getCompleteData();
+            $currentDirectoryData = $this->file->getCompleteData();
         }
 
         return '';
