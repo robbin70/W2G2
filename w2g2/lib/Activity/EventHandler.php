@@ -3,21 +3,22 @@
 namespace OCA\w2g2\Activity;
 
 use OCA\w2g2\Activity\ActivityListener;
-use OCA\w2g2\Notification\NotificationListener;
+//use OCA\w2g2\Notification\NotificationListener;
 
 class EventHandler {
     private $activityListener;
     private $notificationListener;
 
-    public function __construct(ActivityListener $activityListener, NotificationListener $notificationListener)
+//    public function __construct(ActivityListener $activityListener, NotificationListener $notificationListener)
+    public function __construct(ActivityListener $activityListener)
     {
         $this->activityListener = $activityListener;
-        $this->notificationListener = $notificationListener;
+//        $this->notificationListener = $notificationListener;
     }
 
     public function handle(FileLockEvent $event) {
         $this->activityHandler($event);
-        $this->notificationHandler($event);
+//        $this->notificationHandler($event);
     }
 
     private function activityHandler(FileLockEvent $event) {
