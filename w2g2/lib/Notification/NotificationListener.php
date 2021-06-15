@@ -2,30 +2,18 @@
 
 namespace OCA\w2g2\Notification;
 
-use OCP\IUserManager;
-use OCP\Notification\IManager;
 use OCA\w2g2\Activity\FileLockEvent;
 use OCA\w2g2\Db\FavoriteMapper;
 
-class NotificationListener {
-    /** @var IManager */
+class NotificationListener
+{
     protected $notificationManager;
-
-    /** @var IUserManager */
-    protected $userManager;
 
     protected $favoriteMapper;
 
-    /**
-     * Listener constructor.
-     *
-     * @param IManager $notificationManager
-     * @param IUserManager $userManager
-     */
-    public function __construct(IManager $notificationManager, IUserManager $userManager, FavoriteMapper $favoriteMapper)
+    public function __construct(FavoriteMapper $favoriteMapper)
     {
-        $this->notificationManager = $notificationManager;
-        $this->userManager = $userManager;
+        $this->notificationManager = \OC::$server->get(\OCP\Notification\IManager::class);
         $this->favoriteMapper = $favoriteMapper;
     }
 

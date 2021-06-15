@@ -9,7 +9,8 @@ class EventHandler {
     private $activityListener;
     private $notificationListener;
 
-    public function __construct(ActivityListener $activityListener, NotificationListener $notificationListener) {
+    public function __construct(ActivityListener $activityListener, NotificationListener $notificationListener)
+    {
         $this->activityListener = $activityListener;
         $this->notificationListener = $notificationListener;
     }

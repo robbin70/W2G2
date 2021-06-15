@@ -42,11 +42,14 @@
 
         //Walk through all files in the active Filelist
         $('#content').delegate('#fileList', 'fileActionsReady', function (event) {
+            window.x = event.$files;
+
             for (var i = 0; i < event.$files.length; i++) {
                 var file = event.$files[i][0];
                 var $file = $(file);
 
-                if ($file && $file.hasOwnProperty('context')) {
+                // if ($file && $file.hasOwnProperty('context')) {
+                if ($file) {
                     files.push([
                         $file.attr('data-id'),
                         $file.attr('data-file'),

@@ -2,19 +2,19 @@
 
 namespace OCA\w2g2\AppInfo;
 
-use OCA\w2g2\Activity\ActivityListener;
-use OCA\w2g2\Activity\EventHandler;
-use OCA\w2g2\File;
-use OCA\w2g2\Notification\NotificationListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\Notification\IManager;
+use OCP\IUserManager;
+use OCP\App\IAppManager;
+use OCP\IUserSession;
+use OCP\Files\Config\IUserMountCache;
 use Psr\Container\ContainerInterface;
 
 use OCA\w2g2\Notification\Notifier;
-use OCA\w2g2\Controller\AdminController;
+use OCA\w2g2\Controller\AdminSettings;
 use OCA\w2g2\Controller\ConfigController;
 use OCA\w2g2\Controller\LockController;
 use OCA\w2g2\Service\AdminService;
@@ -27,6 +27,9 @@ use OCA\w2g2\Db\FavoriteMapper;
 use OCA\w2g2\Db\FileMapper;
 use OCA\w2g2\Db\GroupFolderMapper;
 use OCA\w2g2\Db\LockMapper;
+use OCA\w2g2\Activity\ActivityListener;
+use OCA\w2g2\File;
+use OCA\w2g2\Notification\NotificationListener;
 
 class Application extends App implements IBootstrap
 {
@@ -41,7 +44,7 @@ class Application extends App implements IBootstrap
         $this->registerMappers($container);
         $this->registerServices($container);
         $this->registerControllers($container);
-        $this->registerVarious($container);
+//        $this->registerVarious($container);
     }
 
     public function boot(IBootContext $context): void
@@ -76,15 +79,6 @@ class Application extends App implements IBootstrap
 
     protected function registerControllers($container)
     {
-        $container->registerService('AdminController', function(ContainerInterface $c){
-            return new AdminController(
-                $c->get('AppName'),
-                $c->get('Request'),
-                $c->get('ConfigService'),
-                $c->get('AdminService')
-            );
-        });
-
         $container->registerService('ConfigController', function(ContainerInterface $c){
             return new ConfigController(
                 $c->get('AppName'),
@@ -184,25 +178,17 @@ class Application extends App implements IBootstrap
     {
         $container->registerService('ActivityListener', function(ContainerInterface $c){
             return new ActivityListener(
-                $c->get('IManager'),
-                $c->get('IUserSession'),
-                $c->get('IAppManager'),
-                $c->get('IUserMountCache')
+                $c->query(IManager::class),
+                $c->query(IUserSession::class),
+                $c->query(IAppManager::class),
+                $c->query(IUserMountCache::class)
             );
         });
 
         $container->registerService('NotificationListener', function(ContainerInterface $c){
             return new NotificationListener(
-                $c->get('IManager'),
-                $c->get('IUserManager'),
+                $c->query(IManager::class),
                 $c->get('FavoriteMapper')
-            );
-        });
-
-        $container->registerService('EventHandler', function(ContainerInterface $c){
-            return new EventHandler(
-                $c->get('ActivityListener'),
-                $c->get('NotificationListener')
             );
         });
     }

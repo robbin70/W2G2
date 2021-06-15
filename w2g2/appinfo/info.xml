@@ -14,7 +14,7 @@
 	</description>
 	<licence>AGPL</licence>
 	<author>Ionut Orzu</author>
-	<version>3.0.5</version>
+	<version>3.2.6</version>
 	<category>social</category>
 	<category>files</category>
 
@@ -42,7 +42,7 @@
 	</activity>
 
 	<settings>
-		<admin>OCA\w2g2\Controller\AdminController</admin>
+		<admin>OCA\w2g2\Settings\AdminSettings</admin>
 	</settings>
 
 	<repair-steps>

@@ -1,27 +1,24 @@
 <?php
 
-namespace OCA\w2g2\Controller;
+namespace OCA\w2g2\Settings;
 
-use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCP\AppFramework\Controller;
 use OCP\Settings\ISettings;
 
-use OCA\w2g2\Service\ConfigService;
-use OCA\w2g2\Service\AdminService;
-
-class AdminController extends Controller implements ISettings {
+class AdminSettings implements ISettings
+{
     protected $appName;
     protected $configService;
     protected $adminService;
 
-    public function __construct($AppName, IRequest $request, ConfigService $configService, AdminService $adminService)
+    public function __construct()
     {
-        parent::__construct($AppName, $request);
+        $this->appName = 'w2g2';
 
-        $this->appName = $AppName;
-        $this->configService = $configService;
-        $this->adminService = $adminService;
+        $app = new \OCP\AppFramework\App('w2g2');
+
+        $this->configService = $app->getContainer()->get('ConfigService');
+        $this->adminService = $app->getContainer()->get('AdminService');
     }
 
     public function getForm()
@@ -38,7 +35,7 @@ class AdminController extends Controller implements ISettings {
 
             'lockingByUsername' => $lockingByNameRule === "rule_username" ? 'checked' : '',
             'lockingByDisplayName' => $lockingByNameRule === "rule_displayname" ? 'checked' : '',
-            
+
             'directoryLockingAll' => $directoryLock === "directory_locking_all",
             'directoryLockingFiles' => $directoryLock === "directory_locking_files",
             'directoryLockingNone' => $directoryLock === "directory_locking_none",
