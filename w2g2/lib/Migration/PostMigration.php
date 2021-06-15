@@ -170,7 +170,7 @@ class PostMigration implements IRepairStep {
      */
     protected function dropTempTable()
     {
-        $dropStatement = "DROP TABLE " . $this->tempTableName;
+        $dropStatement = "DROP TABLE IF EXISTS " . $this->tempTableName;
 
         $this->db->executeQuery($dropStatement);
     }
