@@ -10,9 +10,9 @@ class UIMessage
     protected $userNameRule;
     protected $l;
 
-    public function __construct()
+    public function __construct(ConfigMapper $configMapper)
     {
-        $this->userNameRule = ConfigMapper::getLockingByNameRule();
+        $this->userNameRule = $configMapper->getLockingByNameRule();
 
         $this->l = \OCP\Util::getL10N('w2g2');
     }

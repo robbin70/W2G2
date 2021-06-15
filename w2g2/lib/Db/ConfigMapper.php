@@ -56,14 +56,14 @@ class ConfigMapper extends Mapper
         return $row ? $row['configvalue'] : '';
     }
 
-    public function store($type, $value)
+    public function storeConfig($type, $value)
     {
         $query = "INSERT INTO *PREFIX*appconfig(appid,configkey,configvalue) VALUES('w2g2',?,?)";
 
         $this->db->executeQuery($query, [$type, $value]);
     }
 
-    public function update($type, $value)
+    public function updateConfig($type, $value)
     {
         $query = "UPDATE *PREFIX*appconfig set configvalue=? WHERE appid='w2g2' and configkey=?";
 

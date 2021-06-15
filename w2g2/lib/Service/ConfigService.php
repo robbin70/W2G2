@@ -38,12 +38,12 @@ class ConfigService
 
     public function store($type, $value)
     {
-        $this->configMapper->store($type, $value);
+        $this->configMapper->storeConfig($type, $value);
     }
 
     public function update($type, $value)
     {
-        $this->configMapper->update($type, $value);
+        $this->configMapper->updateConfig($type, $value);
     }
 
     private function handleException($e)
