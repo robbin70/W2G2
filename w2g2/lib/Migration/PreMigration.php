@@ -66,9 +66,19 @@ class PreMigration implements IRepairStep {
      */
     protected function createTempTable()
     {
+        /**
+         * cleanup temp table (issue #68)
+         */
+        $cleanupStatement = "DROP TABLE IF EXISTS " . $this->tempTableName;
+        $this->db->executeQuery($cleanupStatement);
+
+        /**
+        * create temp table
+        */
+
         $createStatement = "CREATE TABLE " .
             $this->tempTableName .
-            " (name varchar(255) PRIMARY KEY, created TIMESTAMP DEFAULT null, locked_by varchar(255))";
+            " (name varchar(255) PRIMARY KEY, locked_by varchar(255), created TIMESTAMP null DEFAULT null)";
 
         $this->db->executeQuery($createStatement);
     }
@@ -79,8 +89,8 @@ class PreMigration implements IRepairStep {
      */
     protected function insertDataInTempTable()
     {
-        $insertStatement = "INSERT INTO " . $this->tempTableName .
-            " SELECT * FROM " . $this->tableName;
+        $insertStatement = "INSERT INTO " . $this->tempTableName . " (name, locked_by, created)" .
+            " SELECT file_id, locked_by, created FROM " . $this->tableName;
 
         $this->db->executeQuery($insertStatement);
     }
