@@ -187,7 +187,6 @@ class Application extends App implements IBootstrap
 
         $container->registerService('NotificationListener', function(ContainerInterface $c){
             return new NotificationListener(
-                $c->query(IManager::class),
                 $c->get('FavoriteMapper')
             );
         });
