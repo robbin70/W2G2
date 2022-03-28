@@ -13,8 +13,8 @@
 		]]>
 	</description>
 	<licence>AGPL</licence>
-	<author>Ionut Orzu</author>
-	<version>3.3.7</version>
+	<author>Newroco</author>
+	<version>3.3.8</version>
 	<category>social</category>
 	<category>files</category>
 
@@ -24,7 +24,7 @@
 	<screenshot>https://raw.githubusercontent.com/newroco/W2G2/master/screenshots/screenshot_01.PNG</screenshot>
 
 	<dependencies>
-		<nextcloud min-version="21" max-version="22"/>
+		<nextcloud min-version="21" max-version="23"/>
 	</dependencies>
 
 	<activity>
