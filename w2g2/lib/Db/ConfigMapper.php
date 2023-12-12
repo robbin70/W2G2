@@ -3,7 +3,7 @@
 namespace OCA\w2g2\Db;
 
 use OCP\IDbConnection;
-use OCP\AppFramework\Db\Mapper;
+use OCP\AppFramework\Db\QBMapper;
 
 class ConfigMapper extends Mapper
 {
